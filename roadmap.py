@@ -99,14 +99,13 @@ class RoadMap:
     def build(self):
         N = self.N
         sampler = self.sampler = Sampler(self)
-        print '\nbuilding road map...'
+        print '\nbuilding road map with radius %.3f...' % self.radius
         self.fhandler.write("\n building road map with radius %.3f...\n" % self.radius)
         with Timer() as t:
             for i in range(N):
                 # generate a valid sample state
                 state = sampler.sampling() 
                 self.addVertex( Vertex(state) )
-        # use some planning strategy to connect vertices
         print 'total samples: %d, time cost: %.2f ms' % (self.size(), t.msecs)
         self.fhandler.write('total samples: %d, time cost: %.2f ms\n' % (self.size(), t.msecs) )
         self.connect()
@@ -133,6 +132,7 @@ class RoadMap:
 
     def reachable(self, source, dest, radius):
         reachable = True
+        reachable_steps = 0
         dist = source.state.distance(dest.state)
         if dist > radius:
             return False
@@ -145,7 +145,8 @@ class RoadMap:
                     reachable = False
                     break
         self.tempstateTime += t.secs
-        # reachable = stepNum
+        # if reachable: 
+        # reachable_steps = stepNum
         return reachable
 
     def isCollison(self, state):

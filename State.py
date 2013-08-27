@@ -25,7 +25,6 @@ class State:
                 x += length*math.cos(angle)
                 y += length*math.sin(angle)
                 self.points.append( Point(x, y) )
-
         # n = len(self.points) - 1
         # self.MIN_AREA = ( (0.007 * n) ** 2 ) * math.pi
 
@@ -77,9 +76,10 @@ class State:
         return (zcross1<0 and zcross2<0 and zcross3<0) or (zcross1>0 and zcross2>0 and zcross3>0)
 
     def distance(self, other):
-        sourceO = self.points[0]
-        destO = other.points[0]
-        return abs(sourceO.x - destO.x) + abs(sourceO.y - destO.y)
+        # for i, each in enumerate(self.points):
+        # sourceO = self.points[0]
+        # destO = other.points[0]
+        # return abs(sourceO.x - destO.x) + abs(sourceO.y - destO.y)
         # return abs(self.o[0] - other.o[0]) + abs(self.o[1] - other.o[1])
-        # return self.shape().distance(other.shape())
+        return self.shape().distance(other.shape())
 

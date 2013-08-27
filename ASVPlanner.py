@@ -10,7 +10,7 @@ class ASVPlanner:
         self.connRadius = connRadius
 
         roadmap = self.setupProblem(inputFile)
-        filename = 'output_' + inputFile
+        filename = 'output_' +str(sampleNum)+ '_' +str(connRadius)+ '_' +inputFile 
         self.fhandle = open(filename, "w")
         roadmap.build()
         print "degree of init: %d" % roadmap.degree(self.init)
