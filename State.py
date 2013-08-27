@@ -83,3 +83,8 @@ class State:
         # return abs(self.o[0] - other.o[0]) + abs(self.o[1] - other.o[1])
         return self.shape().distance(other.shape())
 
+    def printBooms(self):
+        s = []
+        for each in self.booms:
+            s.append( (math.degrees(each[0]), each[1]) )
+        return s

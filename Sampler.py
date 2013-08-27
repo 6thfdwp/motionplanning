@@ -1,4 +1,4 @@
-from __future__ import print_function
+# from __future__ import print_function
 
 import random, math, sys
 from motionplanning.State import State
@@ -44,10 +44,10 @@ class Sampler:
         return booms
 
     # according to current step i, generate a state between source and dest
-    def interpolate(self, source, dest, i):
+    def interpolate(self, source, dest, t):
         sx, sy = source.o
         dx, dy = dest.o
-        dist = self.PRIMITIVE_STEP * i
+        dist = self.PRIMITIVE_STEP * t
         ipoint = LineString([(sx,sy), (dx,dy)]).interpolate(dist)
         newPos = (ipoint.x, ipoint.y)
         if not source.booms: # for the initial and goal with no angle and length info 
@@ -56,4 +56,29 @@ class Sampler:
             booms = source.booms
         s = State(newPos, list(booms))
         # print str(s)
+        return s
+    
+    def interpolate_adv(self, source, dest, t, numSteps):
+        sx, sy = source.o
+        dx, dy = dest.o
+        dist = self.PRIMITIVE_STEP * t # the t-th step
+        # r = t / numSteps
+        ipoint = LineString([(sx,sy), (dx,dy)]).interpolate(dist)
+        newPos = (ipoint.x, ipoint.y)
+        newBooms = []
+        initangle = 0.0
+        booms = source.booms or dest.booms
+        # if not source.booms:
+        #     booms = dest.booms
+        # else:
+        #     booms = source.booms
+        for i, boom in enumerate(booms):
+            sangle = initangle or boom[0]
+            dangle = dest.booms[i][0]
+            # angle_dist = dest.booms[i][0] - boom[0]
+            length = random.uniform( self.BOOM_LENGTH[0], self.BOOM_LENGTH[1] )
+            nn = sangle + t*(dangle - sangle) / numSteps
+            newBooms.append( (nn,length) )
+
+        s = State(newPos, newBooms)
         return s

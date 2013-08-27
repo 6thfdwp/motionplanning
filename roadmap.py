@@ -152,17 +152,29 @@ class RoadMap:
         return reachable
 
     def reachable(self, source, dest):
-        dist = source.distance(dest)
-        if dist < 0.001:
-            return True
-        stepNum = int(math.ceil(dist / 0.001) )
-        t = stepNum / 2 # middle state in between
-        tempState = self.sampler.interpolate(source, dest, t)
-        self.tempstateNum += 1
-        if self.isCollison(tempState):
-            return False
-        # self.reachable(source, tempState)
-        return self.reachable(tempState, dest)
+        try:
+            dist = source.distance(dest)
+            stepNum = int(math.ceil(dist / 0.001) )
+            if stepNum < 2 or dist < 0.001:
+                return True
+            t = stepNum / 2 
+            # middle state in between
+            # tempState = self.sampler.interpolate(source, dest, t)
+            tempState = self.sampler.interpolate_adv(source, dest, t, stepNum)
+            self.tempstateNum += 1
+            if self.isCollison(tempState):
+                return False
+
+            l = self.reachable(source, tempState)
+            if l == False: 
+                return False
+            else:
+                return self.reachable(tempState, dest)
+        except:
+            pass
+            # print source
+            # print tempState
+            # print dest
 
     def isCollison(self, state):
         for obs in self.obstacles:
@@ -178,7 +190,6 @@ class RoadMap:
             result = self.vertices[index].vert
         except IndexError:
             result = None
-            # return result
         return result
 
     def getVEntry(self, v):
@@ -216,10 +227,33 @@ class RoadMap:
 if __name__ == '__main__':
     coords = [(0.2,0.3), (0.4,0.3), (0.4,0.5), (0.2,0.5)]
     obs = Obstacle(coords)
-    G = RoadMap(asvNum=5, obstacles=[obs], N=50, radius=0.1)
-    print G.N, G.radius
-    # s = Sampler(G).sampling()
-    G.build()
+    init = State([(0.185,0.240), (0.150,0.180), (0.220,0.180)])
+    G = RoadMap(asvNum=3, obstacles=[obs], N=200, radius=0.15)
+    G.addVertex( Vertex(init) )
+    # print G.N, G.radius
+    sam = Sampler(G)
+    s1 = sam.sampling()
+    s2 = sam.sampling()
+    s3 = sam.sampling()
+    dist = s1.distance(s2)
+    steps = dist / 0.001
+    i = steps / 2
+    print 'distance: %.3f' % dist
+    print s1.printBooms()
+    print '\n'
+
+    temp = sam.interpolate_adv(s1,s2,i,steps)
+    print temp.printBooms()
+    temp = sam.interpolate_adv(s1,s2,i/2,steps)
+    print temp.printBooms()
+    # for i in range(5):
+    #     temp = sam.interpolate_adv(s1,s2,i,steps)
+    #     # print temp.points
+    #     print temp.printBooms()
+    print '\n'
+    print s2.printBooms()
+    # print "distance"
+    # G.build()
     # size = G.size()
     # for i, u in enumerate(G):
     #     # print u
