@@ -1,4 +1,4 @@
 motionplanning
 ==============
 
-COMP7702 AI course
+UQ COMP7702 AI course
