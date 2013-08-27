@@ -120,17 +120,19 @@ class RoadMap:
                 for j in xrange(i+1, size):
                     conn += 1
                     dest = self.getVertex(j)
-                    if self.reachable(u, dest, radius):
+                    if u.state.distance(dest.state) > radius:
+                        continue
+                    if self.reachable(u.state, dest.state):
                         edges += 1
                         self.addEdge(u, dest)
         print 'total edges: %d' % edges
         self.fhandler.write('total edges: %d\n' % edges)
         print 'connect trys: %d, total connecting time: %.2f s' % (conn, t.secs)
         self.fhandler.write('connect trys: %d, total connecting time: %.2f s\n' % (conn, t.secs) ) 
-        print 'generated intermediate states: %d, time cost: %.2f s' % (self.tempstateNum, self.tempstateTime)
+        print 'generated intermediate states: %d' % (self.tempstateNum)
         self.fhandler.write('generated intermediate states: %d, time cost: %.2f s\n' % (self.tempstateNum, self.tempstateTime) )
 
-    def reachable(self, source, dest, radius):
+    def incremental_reachable(self, source, dest, radius):
         reachable = True
         reachable_steps = 0
         dist = source.state.distance(dest.state)
@@ -148,6 +150,19 @@ class RoadMap:
         # if reachable: 
         # reachable_steps = stepNum
         return reachable
+
+    def reachable(self, source, dest):
+        dist = source.distance(dest)
+        if dist < 0.001:
+            return True
+        stepNum = int(math.ceil(dist / 0.001) )
+        t = stepNum / 2 # middle state in between
+        tempState = self.sampler.interpolate(source, dest, t)
+        self.tempstateNum += 1
+        if self.isCollison(tempState):
+            return False
+        # self.reachable(source, tempState)
+        return self.reachable(tempState, dest)
 
     def isCollison(self, state):
         for obs in self.obstacles:
@@ -201,7 +216,7 @@ class RoadMap:
 if __name__ == '__main__':
     coords = [(0.2,0.3), (0.4,0.3), (0.4,0.5), (0.2,0.5)]
     obs = Obstacle(coords)
-    G = RoadMap(asvNum=5, obstacles=[obs], N=300, radius=0.1)
+    G = RoadMap(asvNum=5, obstacles=[obs], N=50, radius=0.1)
     print G.N, G.radius
     # s = Sampler(G).sampling()
     G.build()
