@@ -73,12 +73,13 @@ class ASVPlanner:
                 dest = e.getDestination()
                 if dest in visited:
                     continue
-                # add each one to priority with initial cost 'infinity'
+                # add new node to priority queue
                 Q.setdefault(dest, float('inf')) 
                 heuristic = dest.estimateCost(self.goal)
-                cost = value + e.getWeight() + heuristic
-                if (Q[dest] > cost): # relax by updating dest
-                    Q[dest] = cost
+                cost = vert.cost + e.getWeight() 
+                estCost = cost + heuristic
+                if ( Q[dest] > estCost ): # if lower cost found from other node 
+                    Q[dest] = estCost # apply heuristic to decide which one need to be expanded next
                     dest.cost = cost
                     dest.setPredecessor(vert)
                     # print "pre:%s cost:%f" % (str(vert), cost)
