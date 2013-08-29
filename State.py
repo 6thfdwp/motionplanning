@@ -7,11 +7,11 @@ class State:
     def __init__(self, o, booms=[]):
         if type(o) == list: # to create initial and goal with a set of coords
             self.points = []
-            self.booms = booms
             for i, each in enumerate(o):
                 if i == 0:
                     self.o = each
                 self.points.append(Point(each[0],each[1]))
+            self.booms = self._calAngle()
         else:
             x, y = self.o = o
             self.booms = booms
@@ -25,8 +25,6 @@ class State:
                 x += length*math.cos(angle)
                 y += length*math.sin(angle)
                 self.points.append( Point(x, y) )
-        # n = len(self.points) - 1
-        # self.MIN_AREA = ( (0.007 * n) ** 2 ) * math.pi
 
     def __str__(self):
         for i, each in enumerate(self.points):
@@ -35,6 +33,27 @@ class State:
                 continue
             str += ' %.3f %.3f' % (each.x, each.y)
         return str
+
+    def _normaliseAngle(self, angle):
+        while angle <= -math.pi:
+            angle += 2 * math.pi
+        while angle > math.pi:
+            angle -= 2 * math.pi
+        return angle
+
+    def _calAngle(self):
+        points = self.points
+        booms = []
+        angle = 0.0
+        for i, each in enumerate(points):
+            if i == len(points)-1: break;
+            p0, p1 = points[i], points[i+1]
+            length = p0.distance(p1)
+            nextAngle = math.atan2(p1.y-p0.y, p1.x-p0.x)
+            turning = self._normaliseAngle(nextAngle - angle)
+            booms.append( (turning, length) )
+            angle = nextAngle
+        return booms
 
     def shape(self):
         coords = []
@@ -87,4 +106,9 @@ class State:
         s = []
         for each in self.booms:
             s.append( (math.degrees(each[0]), each[1]) )
+        print s
         return s
+
+if __name__ == '__main__':
+    init = State([(0.185,0.240), (0.150,0.180), (0.220,0.180)])
+    init.printBooms()

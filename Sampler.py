@@ -66,16 +66,11 @@ class Sampler:
         ipoint = LineString([(sx,sy), (dx,dy)]).interpolate(dist)
         newPos = (ipoint.x, ipoint.y)
         newBooms = []
-        initangle = 0.0
-        booms = source.booms or dest.booms
-        # if not source.booms:
-        #     booms = dest.booms
-        # else:
-        #     booms = source.booms
-        for i, boom in enumerate(booms):
-            sangle = initangle or boom[0]
+        # initangle = 0.0
+        # booms = source.booms or dest.booms
+        for i, boom in enumerate(source.booms):
+            sangle = boom[0]
             dangle = dest.booms[i][0]
-            # angle_dist = dest.booms[i][0] - boom[0]
             length = random.uniform( self.BOOM_LENGTH[0], self.BOOM_LENGTH[1] )
             nn = sangle + t*(dangle - sangle) / numSteps
             newBooms.append( (nn,length) )
