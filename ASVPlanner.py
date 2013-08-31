@@ -99,7 +99,7 @@ class ASVPlanner:
                break;
            source = path[i]
            dest = path[i+1]
-           dist = source.state.distance(dest.state) 
+           dist = source.state.maxDistance(dest.state) 
            stepNum = int(math.ceil(dist / 0.001) )
            self.fhandle.write( str(source) + '\n')
            for i in range(stepNum):

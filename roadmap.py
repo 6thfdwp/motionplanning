@@ -27,7 +27,8 @@ class Vertex:
         self.predecessor = v
 
     def estimateCost(self, goal):
-        return self.state.distance(goal.state)
+        # return self.state.distance(goal.state)
+        return self.state.maxDistance(goal.state)
 
     def isAncestor(self, s):
         p = self.getPredecessor()
@@ -120,7 +121,8 @@ class RoadMap:
                 for j in xrange(i+1, size):
                     conn += 1
                     dest = self.getVertex(j)
-                    dist = u.state.distance(dest.state) 
+                    # dist = u.state.distance(dest.state) 
+                    dist = u.state.maxDistance(dest.state) 
                     if dist > radius:
                         continue
                     if self.binary_reachable(u.state, dest.state):
@@ -152,7 +154,8 @@ class RoadMap:
         Q = [(source, dest)]
         while Q:
             sn, dn = Q.pop(0)
-            dist = sn.distance(dn)
+            # dist = sn.distance(dn)
+            dist = sn.maxDistance(dn)
             stepNum = int( math.ceil(dist / 0.001) )
             if stepNum < 2 or dist < 0.001:
                 continue
@@ -249,22 +252,26 @@ if __name__ == '__main__':
     s2 = sam.sampling()
     s3 = sam.sampling()
     dist = s1.distance(s2)
-    steps = dist / 0.001
-    i = steps / 2
+    maxdist = s1.maxDistance(s2)
+    steps_ = dist / 0.001
+    steps = maxdist / 0.001
+    # i = steps / 2
     print 'distance: %.3f' % dist
-    print s1.printBooms()
+    print 'max distance: %.3f' % maxdist
+    print s1
     print '\n'
 
-    temp = sam.interpolate_adv(s1,s2,i,steps)
-    print temp.printBooms()
-    temp = sam.interpolate_adv(s1,s2,i/2,steps)
-    print temp.printBooms()
-    # for i in range(5):
-    #     temp = sam.interpolate_adv(s1,s2,i,steps)
-    #     # print temp.points
-    #     print temp.printBooms()
+    # temp = sam.interpolate_adv(s1,s2,i,steps)
+    # print temp.printBooms()
+    # temp = sam.interpolate_adv(s1,s2,i/2,steps)
+    # print temp.printBooms()
+    for i in range(5):
+        temp_ = sam.interpolate_adv(s1,s2,i+1,steps_)
+        temp = sam.interpolate_adv(s1,s2,i+1,steps)
+        # print temp_
+        print temp
     print '\n'
-    print s2.printBooms()
+    print s2
     # print "distance"
     # G.build()
     # size = G.size()

@@ -29,9 +29,9 @@ class State:
     def __str__(self):
         for i, each in enumerate(self.points):
             if i == 0:
-                str = '%.3f %.3f' % (each.x,each.y)
+                str = '%.5f %.5f' % (each.x,each.y)
                 continue
-            str += ' %.3f %.3f' % (each.x, each.y)
+            str += ' %.5f %.5f' % (each.x, each.y)
         return str
 
     def _normaliseAngle(self, angle):
@@ -76,17 +76,6 @@ class State:
 
     def checkConvex(self, polygon):
         n = len(self.points)
-        # for i in range(n):
-        #     if i == n-2:
-        #         p0, p1, p2 = self.points[i], self.points[i+1], self.points[0]
-        #     elif i == n-1:
-        #         p0, p1, p2 = self.points[i], self.points[0], self.points[1]
-        #     else:
-        #         p0, p1, p2 = self.points[i], self.points[i+1], self.points[i+2]
-        #     zcross1 = (p1.x-p0.x) * (p2.y-p1.y) - (p2.x-p1.x) * (p1.y-p0.y)
-            # if i == 0: continue
-            # if (zcross1<0 and zcross2<0) or (zcross1>0 and zcross2>0)
-
         p0, p1, p2 = self.points[0:3]
         pn_1, pn = self.points[n-2:]
         zcross1 = (pn.x-pn_1.x) * (p0.y-pn.y) - (p0.x-pn.x) * (pn.y-pn_1.y)
@@ -95,18 +84,27 @@ class State:
         return (zcross1<0 and zcross2<0 and zcross3<0) or (zcross1>0 and zcross2>0 and zcross3>0)
 
     def distance(self, other):
-        # for i, each in enumerate(self.points):
-        # sourceO = self.points[0]
-        # destO = other.points[0]
-        # return abs(sourceO.x - destO.x) + abs(sourceO.y - destO.y)
         # return abs(self.o[0] - other.o[0]) + abs(self.o[1] - other.o[1])
         return self.shape().distance(other.shape())
+
+    def maxDistance(self, other):
+        maxdist = 0.0
+        for i, each in enumerate(self.points):
+            si = self.points[i]
+            di = other.points[i]
+            dist = si.distance(di)
+            if dist > maxdist:
+                maxdist = dist
+        return maxdist
+
+    def initDistance(self, other):
+        return self.points[0].distance(other.points[0])
 
     def printBooms(self):
         s = []
         for each in self.booms:
             s.append( (math.degrees(each[0]), each[1]) )
-        print s
+        # print s
         return s
 
 if __name__ == '__main__':

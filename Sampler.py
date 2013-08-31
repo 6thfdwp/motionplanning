@@ -61,9 +61,10 @@ class Sampler:
     def interpolate_adv(self, source, dest, t, numSteps):
         sx, sy = source.o
         dx, dy = dest.o
-        dist = self.PRIMITIVE_STEP * t # the t-th step
+        # dist = self.PRIMITIVE_STEP * t # the t-th step
         r = t / numSteps
-        ipoint = LineString([(sx,sy), (dx,dy)]).interpolate(dist)
+        steplen = source.initDistance(dest) * r
+        ipoint = LineString([(sx,sy), (dx,dy)]).interpolate(steplen)
         newPos = (ipoint.x, ipoint.y)
         newBooms = []
         # booms = source.booms or dest.booms
