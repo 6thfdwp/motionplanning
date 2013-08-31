@@ -62,8 +62,7 @@ class Sampler:
         sx, sy = source.o
         dx, dy = dest.o
         # dist = self.PRIMITIVE_STEP * t # the t-th step
-        r = t / numSteps
-        steplen = source.initDistance(dest) * r
+        steplen = t * source.initDistance(dest) / numSteps
         ipoint = LineString([(sx,sy), (dx,dy)]).interpolate(steplen)
         newPos = (ipoint.x, ipoint.y)
         newBooms = []
@@ -71,8 +70,8 @@ class Sampler:
         for i, boom in enumerate(source.booms):
             sangle, slen = boom
             dangle, dlen = dest.booms[i]
-            nl = slen + (dlen - slen) * r
-            nn = sangle + (dangle - sangle) * r
+            nl = slen + t*(dlen - slen) / numSteps
+            nn = sangle + t*(dangle - sangle) / numSteps
             newBooms.append( (nn,nl) )
 
         s = State(newPos, newBooms)

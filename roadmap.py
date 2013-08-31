@@ -253,11 +253,12 @@ if __name__ == '__main__':
     s3 = sam.sampling()
     dist = s1.distance(s2)
     maxdist = s1.maxDistance(s2)
-    steps_ = dist / 0.001
-    steps = maxdist / 0.001
+    initdist = s1.initDistance(s2)
+    steps = int(math.ceil(maxdist / 0.001) )
     # i = steps / 2
     print 'distance: %.3f' % dist
-    print 'max distance: %.3f' % maxdist
+    print 'max distance: %.3f, %d steps' % (maxdist, steps)
+    print 'init distance: %.3f' % initdist
     print s1
     print '\n'
 
@@ -265,8 +266,8 @@ if __name__ == '__main__':
     # print temp.printBooms()
     # temp = sam.interpolate_adv(s1,s2,i/2,steps)
     # print temp.printBooms()
-    for i in range(5):
-        temp_ = sam.interpolate_adv(s1,s2,i+1,steps_)
+    for i in range(15):
+        # temp_ = sam.interpolate_adv(s1,s2,i+1,steps_)
         temp = sam.interpolate_adv(s1,s2,i+1,steps)
         # print temp_
         print temp
