@@ -66,7 +66,6 @@ class Sampler:
         ipoint = LineString([(sx,sy), (dx,dy)]).interpolate(dist)
         newPos = (ipoint.x, ipoint.y)
         newBooms = []
-        # initangle = 0.0
         # booms = source.booms or dest.booms
         for i, boom in enumerate(source.booms):
             sangle = boom[0]

@@ -78,8 +78,8 @@ class ASVPlanner:
                 heuristic = dest.estimateCost(self.goal)
                 cost = vert.cost + e.getWeight() 
                 estCost = cost + heuristic
-                if ( Q[dest] > estCost ): # if lower cost found from other node 
-                    Q[dest] = estCost # apply heuristic to decide which one need to be expanded next
+                if ( Q[dest] > estCost ): # if lower cost found
+                    Q[dest] = estCost # use lower to increate priority
                     dest.cost = cost
                     dest.setPredecessor(vert)
                     # print "pre:%s cost:%f" % (str(vert), cost)
@@ -88,13 +88,25 @@ class ASVPlanner:
     def getPath(self, dest):
        p = dest.getPredecessor()
        if p is None:
-           return [str(dest)]
-       return self.getPath(p) + [str(dest)]
+           return [dest]
+       return self.getPath(p) + [dest]
 
     def writeOutput(self):
-       for each in self.getPath(self.goal):
-           self.fhandle.write(each)
-           self.fhandle.write("\n")
+       path = self.getPath(self.goal) 
+       pathlen = len(path)
+       for i, each in enumerate(path):
+           if i == pathlen - 1: 
+               break;
+           source = path[i]
+           dest = path[i+1]
+           dist = source.state.distance(dest.state) 
+           stepNum = int(math.ceil(dist / 0.001) )
+           self.fhandle.write( str(source) + '\n')
+           for i in range(stepNum):
+               tempState = self.roadmap.sampler.interpolate_adv(source.state, dest.state, i+1, stepNum)
+               self.fhandle.write(str(tempState) + '\n')
+
+           self.fhandle.write(str(dest) + "\n")
 
 if __name__ == '__main__':
     p = ASVPlanner(sys.argv[1], 50, 0.1)

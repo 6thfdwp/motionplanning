@@ -120,11 +120,12 @@ class RoadMap:
                 for j in xrange(i+1, size):
                     conn += 1
                     dest = self.getVertex(j)
-                    if u.state.distance(dest.state) > radius:
+                    dist = u.state.distance(dest.state) 
+                    if dist > radius:
                         continue
-                    if self.reachable(u.state, dest.state):
+                    if self.binary_reachable(u.state, dest.state):
                         edges += 1
-                        self.addEdge(u, dest)
+                        self.addEdge(u, dest, dist)
         print 'total edges: %d' % edges
         self.fhandler.write('total edges: %d\n' % edges)
         print 'connect trys: %d, total connecting time: %.2f s' % (conn, t.secs)
@@ -132,12 +133,8 @@ class RoadMap:
         print 'generated intermediate states: %d' % (self.tempstateNum)
         self.fhandler.write('generated intermediate states: %d, time cost: %.2f s\n' % (self.tempstateNum, self.tempstateTime) )
 
-    def incremental_reachable(self, source, dest, radius):
-        reachable = True
-        reachable_steps = 0
-        dist = source.state.distance(dest.state)
-        if dist > radius:
-            return False
+    def incremental_reachable(self, source, dest, dist):
+        # reachable = True
         with Timer() as t:
             stepNum = int(math.ceil(dist / 0.001) )
             for i in range(stepNum):
@@ -151,7 +148,24 @@ class RoadMap:
         # reachable_steps = stepNum
         return reachable
 
-    def reachable(self, source, dest):
+    def binary_reachable(self, source, dest):
+        Q = [(source, dest)]
+        while Q:
+            sn, dn = Q.pop(0)
+            dist = sn.distance(dn)
+            stepNum = int( math.ceil(dist / 0.001) )
+            if stepNum < 2 or dist < 0.001:
+                continue
+            t = stepNum / 2 
+            tempState = self.sampler.interpolate_adv(sn, dn, t, stepNum)
+            self.tempstateNum += 1
+            if self.isCollison(tempState):
+                return False
+            Q.append( (sn, tempState) )
+            Q.append( (tempState, dn) )
+        return True
+
+    def recursive_reachable(self, source, dest):
         try:
             dist = source.distance(dest)
             stepNum = int(math.ceil(dist / 0.001) )
@@ -159,7 +173,6 @@ class RoadMap:
                 return True
             t = stepNum / 2 
             # middle state in between
-            # tempState = self.sampler.interpolate(source, dest, t)
             tempState = self.sampler.interpolate_adv(source, dest, t, stepNum)
             self.tempstateNum += 1
             if self.isCollison(tempState):
@@ -202,8 +215,8 @@ class RoadMap:
         v.setIndex(self.size())
         self.vertices.append(RoadMap.VEntry(v))
 
-    def addEdge(self, source, dest):
-        newedge = Edge(source, dest)
+    def addEdge(self, source, dest, weight):
+        newedge = Edge(source, dest, weight)
         self.getVEntry(source).edges.append(newedge)
         self.getVEntry(dest).edges.append( newedge.reverse() )
         return newedge
