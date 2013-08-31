@@ -259,20 +259,18 @@ if __name__ == '__main__':
     print 'distance: %.3f' % dist
     print 'max distance: %.3f, %d steps' % (maxdist, steps)
     print 'init distance: %.3f' % initdist
-    print s1
+    print s1.printBooms()
     print '\n'
 
     # temp = sam.interpolate_adv(s1,s2,i,steps)
     # print temp.printBooms()
     # temp = sam.interpolate_adv(s1,s2,i/2,steps)
     # print temp.printBooms()
-    for i in range(15):
-        # temp_ = sam.interpolate_adv(s1,s2,i+1,steps_)
-        temp = sam.interpolate_adv(s1,s2,i+1,steps)
-        # print temp_
-        print temp
+    # for i in range(15):
+    #     temp = sam.interpolate_adv(s1,s2,i+1,steps)
+    #     print temp
     print '\n'
-    print s2
+    print s2.printBooms()
     # print "distance"
     # G.build()
     # size = G.size()

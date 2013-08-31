@@ -20,15 +20,16 @@ class Sampler:
             self.o = ( random.random(), random.random() )
             self.booms = []
             for i in range(self.asvNum -1):
-                angle = (random.random()) * math.pi
+                if i == 0:
+                    angle = (random.random()-0.5) * math.pi * 2
+                else:
+                    angle = (random.random()) * math.pi
                 length = random.uniform( self.BOOM_LENGTH[0], self.BOOM_LENGTH[1] )
                 self.booms.append(( angle, length ))
 
             s = State( self.o, self.booms )
             if s.isValid(self.MIN_AREA) and not self.roadmap.isCollison(s):
                 break
-        # if not s.isValid() or self.roadmap.isCollison(s):
-        #     return self.sampling()
         # print (str(s), file=self.logfileHandle)
         return s
     
