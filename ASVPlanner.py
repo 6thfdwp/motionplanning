@@ -95,19 +95,21 @@ class ASVPlanner:
        path = self.getPath(self.goal) 
        pathlen = len(path)
        fullpath = []
+       totalSteps = 0.0
        for i, each in enumerate(path):
            if i == pathlen - 1: 
                fullpath.append( str(path[i]) )
                break;
            source = path[i]
            dest = path[i+1]
-           dist = source.state.totalDistance(dest.state) 
+           dist = source.state.totalDistance(dest.state)
+           totalSteps += dist
            stepNum = int(math.ceil(dist / 0.001) )
            fullpath.append( str(source) + '\n')
            for i in range(stepNum):
                tempState = self.roadmap.sampler.interpolate_adv(source.state, dest.state, i+1, stepNum)
                fullpath.append(str(tempState) + '\n')
-       self.fhandle.write( str(len(fullpath)-1) + ' ' + str(5.5) + '\n')        
+       self.fhandle.write( str(len(fullpath)-1) + ' ' + str(totalSteps) + '\n')        
        for s in fullpath:
             self.fhandle.write(s)
 

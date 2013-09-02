@@ -87,6 +87,12 @@ class State:
         zcross3 = (p0.x-pn.x) * (p1.y-p0.y) - (p1.x-p0.x) * (p0.y-pn.y)
         return (zcross1<0 and zcross2<0 and zcross3<0) or (zcross1>0 and zcross2>0 and zcross3>0)
 
+    def checkBoundary(self):
+        for each in self.points:
+            if each.x < 0 or each.x > 1 or each.y < 0 or each.y > 1:
+                return False
+        return True
+
     def distance(self, other):
         return self.shape().centroid.distance(other.shape().centroid)
         # return self.shape().distance(other.shape())
@@ -143,11 +149,10 @@ if __name__ == '__main__':
     s7 = State( [(0.32184, 0.55258), (0.26281, 0.53311), (0.23430, 0.48809), (0.22138, 0.43325), (0.22077, 0.37438), (0.26811, 0.33909), (0.32072, 0.31852)] )
     s8 = State( [(0.49590, 0.58733), (0.49010, 0.64080), (0.45582, 0.67737), (0.40858, 0.64187), (0.36358, 0.59653), (0.31943, 0.53842), (0.38098, 0.54232)] )
     print s0.distance(s1)
-    print s0.within(s1)
+    print s1.distance(s2)
     # print s0.maxDistance(s1)
 
     print s5.distance(s6)
-    print s5.within(s6)
     # print s5.maxDistance(s6)
     print s7.distance(s8)
     # init.printBooms()

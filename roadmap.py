@@ -260,9 +260,9 @@ if __name__ == '__main__':
     # print temp.printBooms()
     # temp = sam.interpolate_adv(s1,s2,i/2,steps)
     # print temp.printBooms()
-    # for i in range(15):
-    #     temp = sam.interpolate_adv(s1,s2,i+1,steps)
-    #     print temp
+    for i in range(15):
+        temp = sam.interpolate_adv(s1,s2,i+1,steps)
+        print temp.printBooms()
     print '\n'
     print s2.printBooms()
     # G.build()
