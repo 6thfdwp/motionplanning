@@ -151,8 +151,7 @@ class RoadMap:
         while Q:
             sn, dn = Q.pop(0)
             dist = sn.distance(dn)
-            # dist = sn.maxDistance(dn)
-            if dist < 0.005:
+            if dist < 0.006:
                 continue
             stepNum = int( math.ceil(dist / 0.001) )
             t = stepNum / 2 

@@ -97,18 +97,17 @@ class ASVPlanner:
        fullpath = []
        for i, each in enumerate(path):
            if i == pathlen - 1: 
-               # self.fhandle.write(str(path[i]) + "\n")
                fullpath.append( str(path[i]) )
                break;
            source = path[i]
            dest = path[i+1]
-           dist = source.state.maxDistance(dest.state) 
+           dist = source.state.totalDistance(dest.state) 
            stepNum = int(math.ceil(dist / 0.001) )
            fullpath.append( str(source) + '\n')
            for i in range(stepNum):
                tempState = self.roadmap.sampler.interpolate_adv(source.state, dest.state, i+1, stepNum)
                fullpath.append(str(tempState) + '\n')
-       self.fhandle.write( str(len(fullpath)+1) + ' ' + str(5.5) + '\n')        
+       self.fhandle.write( str(len(fullpath)-1) + ' ' + str(5.5) + '\n')        
        for s in fullpath:
             self.fhandle.write(s)
 
