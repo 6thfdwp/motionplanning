@@ -101,14 +101,12 @@ class RoadMap:
         N = self.N
         sampler = self.sampler = Sampler(self)
         print '\nbuilding road map with radius %.3f...' % self.radius
-        self.fhandler.write("\n building road map with radius %.3f...\n" % self.radius)
         with Timer() as t:
             for i in range(N):
                 # generate a valid sample state
                 state = sampler.sampling() 
                 self.addVertex( Vertex(state) )
-        print 'total samples: %d, time cost: %.2f ms' % (self.size(), t.msecs)
-        self.fhandler.write('total samples: %d, time cost: %.2f ms\n' % (self.size(), t.msecs) )
+        print 'total samples: %d, time cost: %.2f s' % (self.size(), t.secs)
         self.connect()
     
     def connect(self):
@@ -121,19 +119,17 @@ class RoadMap:
                 for j in xrange(i+1, size):
                     conn += 1
                     dest = self.getVertex(j)
-                    # dist = u.state.distance(dest.state) 
-                    dist = u.state.maxDistance(dest.state) 
+                    dist = u.state.distance(dest.state) 
+                    # dist = u.state.maxDistance(dest.state) 
                     if dist > radius:
                         continue
                     if self.binary_reachable(u.state, dest.state):
                         edges += 1
-                        self.addEdge(u, dest, dist)
+                        weight = u.state.totalDistance(dest.state) 
+                        self.addEdge(u, dest, weight)
         print 'total edges: %d' % edges
-        self.fhandler.write('total edges: %d\n' % edges)
         print 'connect trys: %d, total connecting time: %.2f s' % (conn, t.secs)
-        self.fhandler.write('connect trys: %d, total connecting time: %.2f s\n' % (conn, t.secs) ) 
         print 'generated intermediate states: %d' % (self.tempstateNum)
-        self.fhandler.write('generated intermediate states: %d, time cost: %.2f s\n' % (self.tempstateNum, self.tempstateTime) )
 
     def incremental_reachable(self, source, dest, dist):
         # reachable = True
@@ -154,11 +150,11 @@ class RoadMap:
         Q = [(source, dest)]
         while Q:
             sn, dn = Q.pop(0)
-            # dist = sn.distance(dn)
-            dist = sn.maxDistance(dn)
-            stepNum = int( math.ceil(dist / 0.001) )
-            if stepNum < 2 or dist < 0.001:
+            dist = sn.distance(dn)
+            # dist = sn.maxDistance(dn)
+            if dist < 0.005:
                 continue
+            stepNum = int( math.ceil(dist / 0.001) )
             t = stepNum / 2 
             tempState = self.sampler.interpolate_adv(sn, dn, t, stepNum)
             self.tempstateNum += 1
@@ -246,7 +242,6 @@ if __name__ == '__main__':
     init = State([(0.185,0.240), (0.150,0.180), (0.220,0.180)])
     G = RoadMap(asvNum=3, obstacles=[obs], N=200, radius=0.15)
     G.addVertex( Vertex(init) )
-    # print G.N, G.radius
     sam = Sampler(G)
     s1 = sam.sampling()
     s2 = sam.sampling()
@@ -271,7 +266,6 @@ if __name__ == '__main__':
     #     print temp
     print '\n'
     print s2.printBooms()
-    # print "distance"
     # G.build()
     # size = G.size()
     # for i, u in enumerate(G):
