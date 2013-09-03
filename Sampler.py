@@ -35,7 +35,7 @@ class Sampler:
             if self.samcount == 10:
                 self.samcount = 0
                 self.narrowState = None
-                print 'copied obs state'
+                # print 'copied obs state'
             else:
                 self.samcount += 1
                 return self.copyNarrowState()
@@ -46,26 +46,25 @@ class Sampler:
                     return s
                 else:
                     if self.nearObsBounds(s):
-                        # print 'near obs ',
-                        # print s
-                        self.narrowState = narrowState = self.narrowSampling(s)
-                        print 'obs based sample ',
-                        print narrowState
-                        return narrowState
-                        # if narrowState:
-                        #     print 'obs based sample ',
-                        #     print narrowState
-                        #     return narrowState
+                        narrowState = self.narrowSampling(s)
+                        # print 'critical sample ',
+                        # print narrowState
+                        # return narrowState
+                        if narrowState:
+                            self.narrowState = narrowState
+                            # print 'critical sample ',
+                            # print narrowState
+                            return narrowState
     
     def copyNarrowState(self):
         x, y = self.narrowState.o[0], self.narrowState.o[1]
         booms = self.narrowState.booms
-        std = 0.06
+        std = 0.08
         while True:
             newo = (random.gauss(x, std), random.gauss(y, std) )
             s = State(newo, list(booms) )
-            if not self.roadmap.isCollison(s):
-                print s
+            if not self.roadmap.isCollison(s) and s.checkBoundary():
+                # print s
                 return s
 
     def nearObsBounds(self, refState):
@@ -78,21 +77,24 @@ class Sampler:
 
     def narrowSampling(self, refState):
         x, y = refState.o[0], refState.o[1]
-        std = 0.04
-        # for i in range(20):
-        while True:
+        std = 0.1
+        for i in range(400):
+        # while True:
             newo = (random.gauss(x, std), random.gauss(y, std) )
             s = self._randomState(newo)
-            if s.isValid(self.MIN_AREA) and not self.roadmap.isCollison(s):
-                return s
+            # if s.isValid(self.MIN_AREA) and not self.roadmap.isCollison(s):
+            #     return s
 
-            # dist = s.distance(refState)
-            # if s.isValid(self.MIN_AREA) and dist <= 0.2 and self.roadmap.isCollison(s):
-            #     numSteps = int(math.ceil(dist / 0.001) )
-            #     # generate the middle state
-            #     midState = self.interpolate_adv(refState, s, numSteps/2, numSteps)
-            #     if not self.roadmap.isCollison(midState):
-            #         return midState
+            if s.isValid(self.MIN_AREA) and self.roadmap.isCollison(s):
+                dist = refState.initDistance(s)
+                # numSteps = int(math.ceil(dist / 0.001) )
+                to = LineString([refState.o, s.o]).interpolate(dist/2)
+                # print to
+                # generate the middle state
+                # midState = self.interpolate_adv(refState, s, numSteps/2, numSteps)
+                midState = self._randomState( (to.x,to.y) )
+                if not self.roadmap.isCollison(midState):
+                    return midState
         return None
 
     # according to current step i, generate a state between source and dest
@@ -108,8 +110,6 @@ class Sampler:
     def interpolate_adv(self, source, dest, t, numSteps):
         sx, sy = source.o
         dx, dy = dest.o
-        # dist = self.PRIMITIVE_STEP * t 
-        # the t-th step
         steplen = t * source.initDistance(dest) / numSteps
         ipoint = LineString([(sx,sy), (dx,dy)]).interpolate(steplen)
         newPos = (ipoint.x, ipoint.y)

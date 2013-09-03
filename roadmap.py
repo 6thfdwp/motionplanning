@@ -142,8 +142,6 @@ class RoadMap:
                     reachable = False
                     break
         self.tempstateTime += t.secs
-        # if reachable: 
-        # reachable_steps = stepNum
         return reachable
 
     def binary_reachable(self, source, dest):
@@ -157,7 +155,7 @@ class RoadMap:
             t = stepNum / 2 
             tempState = self.sampler.interpolate_adv(sn, dn, t, stepNum)
             self.tempstateNum += 1
-            if self.isCollison(tempState):
+            if self.isCollison(tempState) or not tempState.checkBoundary():
                 return False
             Q.append( (sn, tempState) )
             Q.append( (tempState, dn) )
