@@ -31,6 +31,7 @@ class Sampler:
         return s
 
     def sampling(self):
+        # use critical samples to generate more similar to it
         if self.narrowState:
             if self.samcount == 10:
                 self.samcount = 0
@@ -84,7 +85,6 @@ class Sampler:
                 dist = refState.initDistance(s)
                 # numSteps = int(math.ceil(dist / 0.001) )
                 to = LineString([refState.o, s.o]).interpolate(dist/2)
-                # print to
                 # generate the middle state
                 # midState = self.interpolate_adv(refState, s, numSteps/2, numSteps)
                 midState = self._randomState( (to.x,to.y) )

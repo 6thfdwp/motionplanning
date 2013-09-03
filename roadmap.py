@@ -151,7 +151,7 @@ class RoadMap:
         while Q:
             sn, dn = Q.pop(0)
             dist = sn.distance(dn)
-            if dist < 0.006:
+            if dist < 0.009:
                 continue
             stepNum = int( math.ceil(dist / 0.001) )
             t = stepNum / 2 
@@ -162,30 +162,6 @@ class RoadMap:
             Q.append( (sn, tempState) )
             Q.append( (tempState, dn) )
         return True
-
-    def recursive_reachable(self, source, dest):
-        try:
-            dist = source.distance(dest)
-            stepNum = int(math.ceil(dist / 0.001) )
-            if stepNum < 2 or dist < 0.001:
-                return True
-            t = stepNum / 2 
-            # middle state in between
-            tempState = self.sampler.interpolate_adv(source, dest, t, stepNum)
-            self.tempstateNum += 1
-            if self.isCollison(tempState):
-                return False
-
-            l = self.reachable(source, tempState)
-            if l == False: 
-                return False
-            else:
-                return self.reachable(tempState, dest)
-        except:
-            pass
-            # print source
-            # print tempState
-            # print dest
 
     def isCollison(self, state):
         for obs in self.obstacles:

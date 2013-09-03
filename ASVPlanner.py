@@ -79,7 +79,7 @@ class ASVPlanner:
                 cost = vert.cost + e.getWeight() 
                 estCost = cost + heuristic
                 if ( Q[dest] > estCost ): # if lower cost found
-                    Q[dest] = estCost # use lower to increate priority
+                    Q[dest] = estCost # use lower to increase priority
                     dest.cost = cost
                     dest.setPredecessor(vert)
                     # print "pre:%s cost:%f" % (str(vert), cost)
