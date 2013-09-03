@@ -47,9 +47,6 @@ class Sampler:
                 else:
                     if self.nearObsBounds(s):
                         narrowState = self.narrowSampling(s)
-                        # print 'critical sample ',
-                        # print narrowState
-                        # return narrowState
                         if narrowState:
                             self.narrowState = narrowState
                             # print 'critical sample ',
@@ -124,7 +121,10 @@ class Sampler:
             sangle, slen = boom
             dangle, dlen = dest.booms[i]
             nl = slen + t*(dlen - slen) / numSteps
-            turning = self.normalise(dangle - sangle)
+            if i == 0:
+                turning = self.normalise(dangle - sangle)
+            else:
+                turning = dangle - sangle
             nn = sangle + t*turning / numSteps
             newBooms.append( (nn,nl) )
 
