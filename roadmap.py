@@ -123,8 +123,6 @@ class RoadMap:
                     # dist = u.state.maxDistance(dest.state) 
                     if dist > radius:
                         continue
-                    # print u.state
-                    # print dest.state
                     if self.binary_reachable(u.state, dest.state):
                         edges += 1
                         # if edges  % 50 == 0:

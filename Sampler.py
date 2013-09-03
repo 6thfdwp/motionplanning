@@ -31,27 +31,27 @@ class Sampler:
         return s
 
     def sampling(self):
-        # if self.narrowState:
-        #     if self.samcount == 10:
-        #         self.samcount = 0
-        #         self.narrowState = None
-        #         # print 'copied obs state'
-        #     else:
-        #         self.samcount += 1
-        #         return self.copyNarrowState()
+        if self.narrowState:
+            if self.samcount == 10:
+                self.samcount = 0
+                self.narrowState = None
+                # print 'copied obs state'
+            else:
+                self.samcount += 1
+                return self.copyNarrowState()
         while True:
             s = self._randomState()
             if s.isValid(self.MIN_AREA):
                 if not self.roadmap.isCollison(s):
                     return s
-                # else:
-                #     if self.nearObsBounds(s):
-                #         narrowState = self.narrowSampling(s)
-                #         if narrowState: # if we get a valid critical sample
-                #             self.narrowState = narrowState
-                #             # print 'critical sample ',
-                #             # print narrowState
-                #             return narrowState
+                else:
+                    if self.nearObsBounds(s):
+                        narrowState = self.narrowSampling(s)
+                        if narrowState: # if we get a valid critical sample
+                            self.narrowState = narrowState
+                            # print 'critical sample ',
+                            # print narrowState
+                            return narrowState
     
     def copyNarrowState(self):
         x, y = self.narrowState.o[0], self.narrowState.o[1]
@@ -60,7 +60,7 @@ class Sampler:
         while True:
             newo = (random.gauss(x, std), random.gauss(y, std) )
             s = State(newo, list(booms) )
-            if s.isValid(self.MIN_AREA) and not self.roadmap.isCollison(s):
+            if s.checkBoundary() and not self.roadmap.isCollison(s):
                 # print s
                 return s
 
@@ -88,7 +88,7 @@ class Sampler:
                 # generate the middle state
                 # midState = self.interpolate_adv(refState, s, numSteps/2, numSteps)
                 midState = self._randomState( (to.x,to.y) )
-                if not self.roadmap.isCollison(midState):
+                if midState.isValid(self.MIN_AREA) and not self.roadmap.isCollison(midState):
                     return midState
         return None
 
