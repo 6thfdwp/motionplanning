@@ -31,27 +31,27 @@ class Sampler:
         return s
 
     def sampling(self):
-        if self.narrowState:
-            if self.samcount == 10:
-                self.samcount = 0
-                self.narrowState = None
-                # print 'copied obs state'
-            else:
-                self.samcount += 1
-                return self.copyNarrowState()
+        # if self.narrowState:
+        #     if self.samcount == 10:
+        #         self.samcount = 0
+        #         self.narrowState = None
+        #         # print 'copied obs state'
+        #     else:
+        #         self.samcount += 1
+        #         return self.copyNarrowState()
         while True:
             s = self._randomState()
             if s.isValid(self.MIN_AREA):
                 if not self.roadmap.isCollison(s):
                     return s
-                else:
-                    if self.nearObsBounds(s):
-                        narrowState = self.narrowSampling(s)
-                        if narrowState:
-                            self.narrowState = narrowState
-                            # print 'critical sample ',
-                            # print narrowState
-                            return narrowState
+                # else:
+                #     if self.nearObsBounds(s):
+                #         narrowState = self.narrowSampling(s)
+                #         if narrowState: # if we get a valid critical sample
+                #             self.narrowState = narrowState
+                #             # print 'critical sample ',
+                #             # print narrowState
+                #             return narrowState
     
     def copyNarrowState(self):
         x, y = self.narrowState.o[0], self.narrowState.o[1]
@@ -60,7 +60,7 @@ class Sampler:
         while True:
             newo = (random.gauss(x, std), random.gauss(y, std) )
             s = State(newo, list(booms) )
-            if not self.roadmap.isCollison(s) and s.checkBoundary():
+            if s.isValid(self.MIN_AREA) and not self.roadmap.isCollison(s):
                 # print s
                 return s
 
@@ -79,8 +79,6 @@ class Sampler:
         # while True:
             newo = (random.gauss(x, std), random.gauss(y, std) )
             s = self._randomState(newo)
-            # if s.isValid(self.MIN_AREA) and not self.roadmap.isCollison(s):
-            #     return s
 
             if s.isValid(self.MIN_AREA) and self.roadmap.isCollison(s):
                 dist = refState.initDistance(s)
@@ -122,10 +120,10 @@ class Sampler:
             dangle, dlen = dest.booms[i]
             nl = slen + t*(dlen - slen) / numSteps
             if i == 0:
-                turning = self.normalise(dangle - sangle)
+                turningDelta = self.normalise(dangle - sangle)
             else:
-                turning = dangle - sangle
-            nn = sangle + t*turning / numSteps
+                turningDelta = dangle - sangle
+            nn = sangle + t*turningDelta / numSteps
             newBooms.append( (nn,nl) )
 
         s = State(newPos, newBooms)

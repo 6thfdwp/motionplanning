@@ -123,8 +123,12 @@ class RoadMap:
                     # dist = u.state.maxDistance(dest.state) 
                     if dist > radius:
                         continue
+                    # print u.state
+                    # print dest.state
                     if self.binary_reachable(u.state, dest.state):
                         edges += 1
+                        # if edges  % 50 == 0:
+                        #     print 'connecting %d' % edges
                         weight = u.state.totalDistance(dest.state) 
                         self.addEdge(u, dest, weight)
         print 'total edges: %d' % edges
@@ -235,11 +239,11 @@ class RoadMap:
 
 if __name__ == '__main__':
     coords = [ [(0.375,0.000), (0.625,0.000), (0.625,0.480), (0.375,0.480)], \
-             [(0.375, 0.520), (0.625, 0.520), (0.625, 1.000), (0.375, 1.000)] ]
+             [(0.375, 0.820), (0.625, 0.820), (0.625, 1.000), (0.375, 1.000)] ]
     obs1 = Obstacle(coords[0])
     obs2 = Obstacle(coords[1])
     init = State([(0.185,0.240), (0.150,0.180), (0.220,0.180)])
-    G = RoadMap(asvNum=3, obstacles=[obs1, obs2], N=200, radius=0.15)
+    G = RoadMap(asvNum=7, obstacles=[obs1, obs2], N=200, radius=0.15)
     G.addVertex( Vertex(init) )
     sam = Sampler(G)
     # s1 = sam.sampling()
