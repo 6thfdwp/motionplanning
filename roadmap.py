@@ -236,36 +236,36 @@ class RoadMap:
         # return iter(self.vertices)
 
 if __name__ == '__main__':
-    coords = [(0.2,0.3), (0.4,0.3), (0.4,0.5), (0.2,0.5)]
-    obs = Obstacle(coords)
+    coords = [ [(0.375,0.000), (0.625,0.000), (0.625,0.480), (0.375,0.480)], \
+             [(0.375, 0.520), (0.625, 0.520), (0.625, 1.000), (0.375, 1.000)] ]
+    obs1 = Obstacle(coords[0])
+    obs2 = Obstacle(coords[1])
     init = State([(0.185,0.240), (0.150,0.180), (0.220,0.180)])
-    G = RoadMap(asvNum=3, obstacles=[obs], N=200, radius=0.15)
+    G = RoadMap(asvNum=3, obstacles=[obs1, obs2], N=200, radius=0.15)
     G.addVertex( Vertex(init) )
     sam = Sampler(G)
-    s1 = sam.sampling()
-    s2 = sam.sampling()
-    s3 = sam.sampling()
-    dist = s1.distance(s2)
-    maxdist = s1.maxDistance(s2)
-    initdist = s1.initDistance(s2)
-    steps = int(math.ceil(maxdist / 0.001) )
+    # s1 = sam.sampling()
+    # s2 = sam.sampling()
+    # s3 = sam.sampling()
+    # dist = s1.distance(s2)
+    # maxdist = s1.maxDistance(s2)
+    # steps = int(math.ceil(maxdist / 0.001) )
     # i = steps / 2
-    print 'distance: %.3f' % dist
-    print 'max distance: %.3f, %d steps' % (maxdist, steps)
-    print 'init distance: %.3f' % initdist
-    print s1.printBooms()
-    print '\n'
+    # print 'distance: %.3f' % dist
+    # print 'max distance: %.3f, %d steps' % (maxdist, steps)
+    # print s1.printBooms()
+    # print '\n'
 
     # temp = sam.interpolate_adv(s1,s2,i,steps)
     # print temp.printBooms()
     # temp = sam.interpolate_adv(s1,s2,i/2,steps)
     # print temp.printBooms()
-    for i in range(15):
-        temp = sam.interpolate_adv(s1,s2,i+1,steps)
-        print temp.printBooms()
-    print '\n'
-    print s2.printBooms()
-    # G.build()
+    # for i in range(15):
+    #     temp = sam.interpolate_adv(s1,s2,i+1,steps)
+    #     print temp.printBooms()
+    # print '\n'
+    # print s2.printBooms()
+    G.build()
     # size = G.size()
     # for i, u in enumerate(G):
     #     # print u
