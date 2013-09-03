@@ -35,7 +35,7 @@ class State:
             str += ' %.5f %.5f' % (each.x, each.y)
         return str
 
-    def _normaliseAngle(self, angle):
+    def normaliseAngle(self, angle):
         while angle <= -math.pi:
             angle += 2 * math.pi
         while angle > math.pi:
@@ -51,7 +51,7 @@ class State:
             p0, p1 = points[i], points[i+1]
             length = p0.distance(p1)
             nextAngle = math.atan2(p1.y-p0.y, p1.x-p0.x)
-            turning = self._normaliseAngle(nextAngle - angle)
+            turning = self.normaliseAngle(nextAngle - angle)
             booms.append( (turning, length) )
             angle = nextAngle
         return booms

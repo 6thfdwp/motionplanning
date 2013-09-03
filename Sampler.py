@@ -107,6 +107,12 @@ class Sampler:
         s = State(newPos, list(source.booms))
         return s
     
+    def normalise(self, angle):
+        while angle <= -math.pi:
+            angle += 2 * math.pi
+        while angle > math.pi:
+            angle -= 2 * math.pi
+        return angle
     def interpolate_adv(self, source, dest, t, numSteps):
         sx, sy = source.o
         dx, dy = dest.o
@@ -118,7 +124,8 @@ class Sampler:
             sangle, slen = boom
             dangle, dlen = dest.booms[i]
             nl = slen + t*(dlen - slen) / numSteps
-            nn = sangle + t*(dangle - sangle) / numSteps
+            turning = self.normalise(dangle - sangle)
+            nn = sangle + t*turning / numSteps
             newBooms.append( (nn,nl) )
 
         s = State(newPos, newBooms)
