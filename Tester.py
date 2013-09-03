@@ -9,7 +9,7 @@ from motionplanning.ASVPlanner import ASVPlanner
 #               [(150,0.1), (150,0.2), (200,0.1) (200,0.2)] ]
 
 testcases = ['7ASV-3obs.txt'] 
-tuningPara = [ [(300,0.15)] ]
+tuningPara = [ [(400,0.16)] ]
 for i, case in enumerate(testcases):
     paras = tuningPara[i]
     for para in paras: # try different samples and radius
